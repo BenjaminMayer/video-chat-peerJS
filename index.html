@@ -46,8 +46,7 @@ moi = document.getElementById("moi")
 let video = document.getElementById('moi');
 video.srcObject = null
 var peer = new Peer();
-console.log("peer")
-console.log("peer")
+
 peer.on('open', function(id) {
 
   console.log('My peer ID is: ' + id);
@@ -103,7 +102,6 @@ constraints = {
             }
         };
 mediaStream = navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
-console.log("wtf ?")
 let video2 = document.getElementById('emetteur')
 let video = document.getElementById('moi');
 video.srcObject = stream;

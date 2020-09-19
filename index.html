@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Visio conf</h1>
+
+<p>Rejoignez ou lancez une conf</p>
+
+<button id="start">Start</button>
+<button id ="join">Join</button>
+
+<video id="moi" controls autoplay></video>
+<video id="emetteur" controls autoplay>></video>
+</body>
+
+</html>
+<script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+<script>
+/*
+if (navigator.mediaDevices === undefined) {
+            navigator.mediaDevices = {};
+            navigator.mediaDevices.getUserMedia = function(constraintObj) {
+                let getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+                if (!getUserMedia) {
+                    return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+                }
+                return new Promise(function(resolve, reject) {
+                    getUserMedia.call(navigator, constraintObj, resolve, reject);
+                });
+            }
+        }else{
+            navigator.mediaDevices.enumerateDevices()
+            .then(devices => {
+                devices.forEach(device=>{
+                    console.log(device.kind.toUpperCase(), device.label);
+                    //, device.deviceId
+                })
+            })
+            .catch(err=>{
+                console.log(err.name, err.message);
+            })
+        }*/
+start = document.getElementById("start")
+join = document.getElementById("join")
+moi = document.getElementById("moi")
+let video = document.getElementById('moi');
+video.srcObject = null
+var peer = new Peer();
+console.log("peer")
+console.log("peer")
+peer.on('open', function(id) {
+
+  console.log('My peer ID is: ' + id);
+  peer_id = id
+});
+start.addEventListener("click", function(){
+
+
+console.log("?")
+constraints = {
+            audio: false,
+            video: {
+                facingMode: "user",
+                width: { min: 640, ideal: 1280, max: 1920 },
+                height: { min: 480, ideal: 720, max: 1080 }
+            }
+        };
+
+mediaStream = navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+let video = document.getElementById('moi');
+video.srcObject = stream;
+peer.on('call', function(call) {
+  // Answer the call, providing our mediaStream
+  call.answer(stream);
+  call.on('stream', function(stream2) {
+  // `stream` is the MediaStream of the remote peer.
+  // Here you'd add it to an HTML video/canvas element.
+  let video2 = document.getElementById('emetteur')
+  video2.srcObject = stream2;
+});
+
+});
+
+
+}).catch(function(err) {
+  console.log(err);
+});
+
+
+
+})
+
+join.addEventListener("click", function(){
+console.log("ok")
+dest_peer = prompt("entrez le peer Id : ");
+
+constraints = {
+            audio: false,
+            video: {
+                facingMode: "user",
+                width: { min: 640, ideal: 1280, max: 1920 },
+                height: { min: 480, ideal: 720, max: 1080 }
+            }
+        };
+mediaStream = navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+console.log("wtf ?")
+let video2 = document.getElementById('emetteur')
+let video = document.getElementById('moi');
+video.srcObject = stream;
+var call = peer.call(dest_peer,
+  stream);
+  call.on('stream', function(stream2) {
+  // `stream` is the MediaStream of the remote peer.
+  // Here you'd add it to an HTML video/canvas element.
+  video2.srcObject = stream2;
+});
+}).catch(function(err) {
+  console.log(err);
+});
+});
+
+</script>
